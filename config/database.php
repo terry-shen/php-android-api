@@ -2,8 +2,8 @@
 class Database {
     private $host = "localhost";
     private $db_name = "android_api";
-    private $username = "your_db_username";
-    private $password = "your_db_password";
+    private $username = "api_user";
+    private $password = "api_user";
     public $conn;
 
     public function getConnection() {
