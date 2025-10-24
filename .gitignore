@@ -1,0 +1,28 @@
+# 忽略操作系统文件
+.DS_Store
+Thumbs.db
+
+# 忽略IDE文件
+.idea/
+*.swp
+*.swo
+*~
+
+# 忽略日志文件
+*.log
+logs/
+
+# 忽略环境配置文件
+.env
+config/database.php  # 包含敏感信息的配置文件
+
+# 忽略上传的文件
+uploads/
+
+# 忽略Composer依赖（如果使用）
+vendor/
+composer.lock
+
+# 忽略系统缓存
+/tmp/
+/cache/
