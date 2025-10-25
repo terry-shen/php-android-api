@@ -217,8 +217,8 @@ class User {
      */
     public function update($identifierType = 'id') {
         try {
-            // 清理数据
-            $this->username = htmlspecialchars(strip_tags($this->username));
+            // // 清理数据
+            // $this->username = htmlspecialchars(strip_tags($this->username));
             $this->email = htmlspecialchars(strip_tags($this->email));
             
             // 根据标识符类型验证
@@ -227,11 +227,13 @@ class User {
                 if (empty($this->id) || $this->id <= 0) {
                     return false;
                 }
+                $identifier = $this->id;
             } elseif ($identifierType === 'username') {
                 $this->username = htmlspecialchars(strip_tags($this->username));
                 if (empty($this->username)) {
                     return false;
                 }
+                $identifier = $this->username;
             } else {
                 return false; // 无效的标识符类型
             }
@@ -240,7 +242,7 @@ class User {
             $query = "UPDATE " . $this->table_name . " 
                       SET email = :email, updated_at = NOW()";
             
-            // 如果提供了新密码，则更新密码
+             // 如果提供了新密码，则更新密码
             if (!empty($this->password)) {
                 $this->password = htmlspecialchars(strip_tags($this->password));
                 $hashed_password = password_hash($this->password, PASSWORD_DEFAULT);
@@ -264,11 +266,7 @@ class User {
             }
             
             // 绑定标识符参数
-            if ($identifierType === 'id') {
-                $stmt->bindParam(":identifier", $this->id, PDO::PARAM_INT);
-            } else {
-                $stmt->bindParam(":identifier", $this->username);
-            }
+            $stmt->bindParam(":identifier", $identifier);
 
             return $stmt->execute();
             
