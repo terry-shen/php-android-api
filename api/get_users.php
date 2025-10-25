@@ -10,7 +10,7 @@ $db = $database->getConnection();
 
 $user = new User($db);
 
-$stmt = $user->read();
+$stmt = $user->readAll();
 $num = $stmt->rowCount();
 
 if($num > 0) {
