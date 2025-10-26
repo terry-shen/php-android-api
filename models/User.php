@@ -238,9 +238,9 @@ class User {
             // // 清理数据
             // $this->username = htmlspecialchars(strip_tags($this->username));
             // $this->email = "noemail@noemail.com";
-            writeLog("原始email: " . $this->email);
+            // writeLog("原始email: " . $this->email);
             $this->email = htmlspecialchars(strip_tags($this->email));
-            writeLog("清理后email: " . $this->email);
+            // writeLog("清理后email: " . $this->email);
             
             // 根据标识符类型验证
             if ($identifierType === 'id') {
@@ -277,12 +277,12 @@ class User {
                 $query .= " WHERE username = :identifier";
             }
 
-            writeLog("连接后的query语句: " . $query);
+            // writeLog("连接后的query语句: " . $query);
             $stmt = $this->conn->prepare($query);
 
             // 绑定参数
             $stmt->bindParam(":email", $this->email);
-            writeLog("绑定的email: " . $this->email);
+            // writeLog("绑定的email: " . $this->email);
             
             if (!empty($this->password)) {
                 $stmt->bindParam(":password", $hashed_password);
