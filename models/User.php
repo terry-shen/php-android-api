@@ -210,38 +210,6 @@ class User {
         }
     }
 
-    function writeLog($message) {
-        $logFile = '/tmp/logs/php_debug.log';        
-        try {            
-            // 检查目录
-            $logDir = dirname($logFile);
-            
-            // 如果目录不存在，尝试创建
-            if (!is_dir($logDir)) {
-                if (mkdir($logDir, 0755, true)) {
-                    echo "✓ 目录创建成功<br>";
-                } else {
-                    return false;
-                }
-            }            
-            
-            $timestamp = date('Y-m-d H:i:s');
-            $logMessage = "[$timestamp] $message\n";
-                        
-            // 尝试写入
-            $result = file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
-            
-            if ($result === false) {                
-                return false;
-            } else {
-                return true;
-            }
-            
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
     /**
      * 更新用户信息 - 支持根据ID或username更新
      * @param string $identifierType 标识符类型：'id' 或 'username'
@@ -250,13 +218,7 @@ class User {
     public function update($identifierType = 'id') {
         try {
             // // 清理数据
-            // $this->username = htmlspecialchars(strip_tags($this->username));
             // $this->email = "noemail@noemail.com";
-            writeLog("清理前email: " . $this->email);
-            echo "清理前email: " . $this->email;
-            $this->email = htmlspecialchars(strip_tags($this->email));
-            // writeLog("清理后email: " . $this->email);
-            // echo "清理后email: " . $this->email . <br>;
             
             // 根据标识符类型验证
             if ($identifierType === 'id') {
@@ -279,7 +241,7 @@ class User {
             $query = "UPDATE " . $this->table_name . " 
                       SET email = :email, updated_at = NOW()";
             
-             // 如果提供了新密码，则更新密码
+            // 如果提供了新密码，则更新密码
             if (!empty($this->password)) {
                 $this->password = htmlspecialchars(strip_tags($this->password));
                 $hashed_password = password_hash($this->password, PASSWORD_DEFAULT);
@@ -297,11 +259,9 @@ class User {
             // echo "连接后的query语句: " . $query . <br>;
             $stmt = $this->conn->prepare($query);
 
+            $this->email = htmlspecialchars(strip_tags($this->email));
             // 绑定参数
             $stmt->bindParam(":email", $this->email);
-            // writeLog("绑定的email: " . $this->email);
-            // echo "绑定的email: " . $this->email . <br>;
-
             
             if (!empty($this->password)) {
                 $stmt->bindParam(":password", $hashed_password);
