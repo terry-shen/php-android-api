@@ -216,78 +216,79 @@ class User {
      * @return bool
      */
     public function update($identifierType = 'id') {
-        try {
-            // 验证必需数据
-            if (empty($this->email) || !filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-                throw new InvalidArgumentException("邮箱无效或为空");
-            }
+        return false;
+        // try {
+        //     // 验证必需数据
+        //     if (empty($this->email) || !filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+        //         throw new InvalidArgumentException("邮箱无效或为空");
+        //     }
             
-            // 确定标识符
-            if ($identifierType === 'id') {
-                if (empty($this->id) || $this->id <= 0) {
-                    throw new InvalidArgumentException("用户ID无效");
-                }
-                $identifier = (int)$this->id;
-                $whereField = 'id';
-            } elseif ($identifierType === 'username') {
-                if (empty($this->username)) {
-                    throw new InvalidArgumentException("用户名为空");
-                }
-                $identifier = trim($this->username);
-                $whereField = 'username';
-            } else {
-                throw new InvalidArgumentException("无效的标识符类型");
-            }
+        //     // 确定标识符
+        //     if ($identifierType === 'id') {
+        //         if (empty($this->id) || $this->id <= 0) {
+        //             throw new InvalidArgumentException("用户ID无效");
+        //         }
+        //         $identifier = (int)$this->id;
+        //         $whereField = 'id';
+        //     } elseif ($identifierType === 'username') {
+        //         if (empty($this->username)) {
+        //             throw new InvalidArgumentException("用户名为空");
+        //         }
+        //         $identifier = trim($this->username);
+        //         $whereField = 'username';
+        //     } else {
+        //         throw new InvalidArgumentException("无效的标识符类型");
+        //     }
             
-            // 构建动态更新字段
-            $updates = ['email = :email', 'updated_at = NOW()'];
-            $params = [':email' => $this->email];
+        //     // 构建动态更新字段
+        //     $updates = ['email = :email', 'updated_at = NOW()'];
+        //     $params = [':email' => $this->email];
             
-            // 处理密码更新
-            if (!empty($this->password)) {
-                if (strlen(trim($this->password)) < 1) {
-                    throw new InvalidArgumentException("密码长度不足");
-                }
-                $hashedPassword = password_hash(trim($this->password), PASSWORD_DEFAULT);
-                $updates[] = 'password = :password';
-                $params[':password'] = $hashedPassword;
-            }
+        //     // 处理密码更新
+        //     if (!empty($this->password)) {
+        //         if (strlen(trim($this->password)) < 1) {
+        //             throw new InvalidArgumentException("密码长度不足");
+        //         }
+        //         $hashedPassword = password_hash(trim($this->password), PASSWORD_DEFAULT);
+        //         $updates[] = 'password = :password';
+        //         $params[':password'] = $hashedPassword;
+        //     }
             
-            // 构建完整查询
-            $query = "UPDATE " . $this->table_name . " 
-                    SET " . implode(', ', $updates) . "
-                    WHERE $whereField = :identifier";
+        //     // 构建完整查询
+        //     $query = "UPDATE " . $this->table_name . " 
+        //             SET " . implode(', ', $updates) . "
+        //             WHERE $whereField = :identifier";
             
-            $params[':identifier'] = $identifier;
+        //     $params[':identifier'] = $identifier;
             
-            // 准备并执行语句
-            $stmt = $this->conn->prepare($query);
+        //     // 准备并执行语句
+        //     $stmt = $this->conn->prepare($query);
             
-            // 显式绑定参数类型
-            foreach ($params as $key => $value) {
-                $paramType = PDO::PARAM_STR;
-                if ($key === ':identifier' && $identifierType === 'id') {
-                    $paramType = PDO::PARAM_INT;
-                }
-                $stmt->bindValue($key, $value, $paramType);
-            }
+        //     // 显式绑定参数类型
+        //     foreach ($params as $key => $value) {
+        //         $paramType = PDO::PARAM_STR;
+        //         if ($key === ':identifier' && $identifierType === 'id') {
+        //             $paramType = PDO::PARAM_INT;
+        //         }
+        //         $stmt->bindValue($key, $value, $paramType);
+        //     }
             
-            $success = $stmt->execute();
-            $affectedRows = $stmt->rowCount();
+        //     $success = $stmt->execute();
+        //     $affectedRows = $stmt->rowCount();
             
-            if ($affectedRows === 0) {
-                error_log("警告: 更新操作未影响任何行，可能用户不存在");
-            }
+        //     if ($affectedRows === 0) {
+        //         error_log("警告: 更新操作未影响任何行，可能用户不存在");
+        //     }
             
-            return $success && $affectedRows > 0;
+        //     return $success && $affectedRows > 0;
             
-        } catch (InvalidArgumentException $e) {
-            error_log("数据验证错误: " . $e->getMessage());
-            return false;
-        } catch(PDOException $exception) {
-            error_log("数据库错误: " . $exception->getMessage());
-            return false;
-        }
+        // } catch (InvalidArgumentException $e) {
+        //     error_log("数据验证错误: " . $e->getMessage());
+        //     return false;
+        // } catch(PDOException $exception) {
+        //     error_log("数据库错误: " . $exception->getMessage());
+        //     return false;
+        // }
     }
 
     /**
