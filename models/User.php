@@ -210,6 +210,17 @@ class User {
         }
     }
 
+    function writeLog($message) {
+        $logFile = '/tmp/logs/php_debug.log';
+        
+        // 输出路径以便查找
+        echo "日志文件路径: " . $logFile . "<br>";
+        
+        $timestamp = date('Y-m-d H:i:s');
+        $logMessage = "[$timestamp] $message\n";
+        file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
+    }
+
     /**
      * 更新用户信息 - 支持根据ID或username更新
      * @param string $identifierType 标识符类型：'id' 或 'username'
@@ -220,9 +231,9 @@ class User {
             // // 清理数据
             // $this->username = htmlspecialchars(strip_tags($this->username));
             // $this->email = "noemail@noemail.com";
-            error_log("清理前email: " . $this->email);
+            writeLog("清理前email: " . $this->email);
             $this->email = htmlspecialchars(strip_tags($this->email));
-            error_log("清理后email: " . $this->email);
+            writeLog("清理后email: " . $this->email);
             
             // 根据标识符类型验证
             if ($identifierType === 'id') {
@@ -259,14 +270,12 @@ class User {
                 $query .= " WHERE username = :identifier";
             }
 
-            // writeLog("连接后的query语句: " . $query);
-            error_log("连接后的query语句: " . $query);
+            writeLog("连接后的query语句: " . $query);
             $stmt = $this->conn->prepare($query);
 
             // 绑定参数
             $stmt->bindParam(":email", $this->email);
-            error_log("绑定的email: " . $this->email);
-            // writeLog("绑定的email: " . $this->email);
+            writeLog("绑定的email: " . $this->email);
             
             if (!empty($this->password)) {
                 $stmt->bindParam(":password", $hashed_password);
