@@ -217,65 +217,75 @@ class User {
      */
     public function update($identifierType = 'id') {
         try {
-            // // 清理数据
-            // $this->email = "noemail@noemail.com";
+            // 验证必需数据
+            if (empty($this->email) || !filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+                throw new InvalidArgumentException("邮箱无效或为空");
+            }
             
-            // 根据标识符类型验证
+            // 确定标识符
             if ($identifierType === 'id') {
-                $this->id = htmlspecialchars(strip_tags($this->id));
                 if (empty($this->id) || $this->id <= 0) {
-                    return false;
+                    throw new InvalidArgumentException("用户ID无效");
                 }
-                $identifier = $this->id;
+                $identifier = (int)$this->id;
+                $whereField = 'id';
             } elseif ($identifierType === 'username') {
-                $this->username = htmlspecialchars(strip_tags($this->username));
                 if (empty($this->username)) {
-                    return false;
+                    throw new InvalidArgumentException("用户名为空");
                 }
-                $identifier = $this->username;
+                $identifier = trim($this->username);
+                $whereField = 'username';
             } else {
-                return false; // 无效的标识符类型
+                throw new InvalidArgumentException("无效的标识符类型");
             }
             
-            // 构建更新查询
+            // 构建动态更新字段
+            $updates = ['email = :email', 'updated_at = NOW()'];
+            $params = [':email' => $this->email];
+            
+            // 处理密码更新
+            if (!empty($this->password)) {
+                if (strlen(trim($this->password)) < 1) {
+                    throw new InvalidArgumentException("密码长度不足");
+                }
+                $hashedPassword = password_hash(trim($this->password), PASSWORD_DEFAULT);
+                $updates[] = 'password = :password';
+                $params[':password'] = $hashedPassword;
+            }
+            
+            // 构建完整查询
             $query = "UPDATE " . $this->table_name . " 
-                      SET email = :email, updated_at = NOW()";
+                    SET " . implode(', ', $updates) . "
+                    WHERE $whereField = :identifier";
             
-            // 如果提供了新密码，则更新密码
-            if (!empty($this->password)) {
-                $this->password = htmlspecialchars(strip_tags($this->password));
-                $hashed_password = password_hash($this->password, PASSWORD_DEFAULT);
-                $query .= ", password = :password";
-            }
+            $params[':identifier'] = $identifier;
             
-            // 根据标识符类型添加WHERE条件
-            if ($identifierType === 'id') {
-                $query .= " WHERE id = :identifier";
-            } else {
-                $query .= " WHERE username = :identifier";
-            }
-
-            // writeLog("连接后的query语句: " . $query);
-            // echo "连接后的query语句: " . $query . <br>;
+            // 准备并执行语句
             $stmt = $this->conn->prepare($query);
-
-            // $this->email = htmlspecialchars(strip_tags($this->email));
-            $this->email = strip_tags($this->email);
-            // 绑定参数
-            $stmt->bindParam(":email", $this->email);
             
-            if (!empty($this->password)) {
-                $stmt->bindParam(":password", $hashed_password);
-                // $stmt->bindParam(":password", $this->password);
+            // 显式绑定参数类型
+            foreach ($params as $key => $value) {
+                $paramType = PDO::PARAM_STR;
+                if ($key === ':identifier' && $identifierType === 'id') {
+                    $paramType = PDO::PARAM_INT;
+                }
+                $stmt->bindValue($key, $value, $paramType);
             }
             
-            // 绑定标识符参数
-            $stmt->bindParam(":identifier", $identifier);
-
-            return $stmt->execute();
+            $success = $stmt->execute();
+            $affectedRows = $stmt->rowCount();
             
+            if ($affectedRows === 0) {
+                error_log("警告: 更新操作未影响任何行，可能用户不存在");
+            }
+            
+            return $success && $affectedRows > 0;
+            
+        } catch (InvalidArgumentException $e) {
+            error_log("数据验证错误: " . $e->getMessage());
+            return false;
         } catch(PDOException $exception) {
-            error_log("update错误: " . $exception->getMessage());
+            error_log("数据库错误: " . $exception->getMessage());
             return false;
         }
     }
