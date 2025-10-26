@@ -210,6 +210,23 @@ class User {
         }
     }
 
+    function writeLog($message) {
+        // 使用系统临时目录，通常有写权限
+        $logFile = sys_get_temp_dir() . '/user_update_debug.log';
+        
+        $timestamp = date('Y-m-d H:i:s');
+        $logMessage = "[$timestamp] $message\n";
+        
+        $result = file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
+        
+        if ($result === false) {
+            // 如果还是失败，尝试其他方法
+            error_log("无法写入日志: " . $message);
+        }
+        
+        return $result !== false;
+    }
+
     /**
      * 更新用户信息 - 支持根据ID或username更新
      * @param string $identifierType 标识符类型：'id' 或 'username'
@@ -219,8 +236,10 @@ class User {
         try {
             // // 清理数据
             // $this->username = htmlspecialchars(strip_tags($this->username));
+            // $this->email = "noemail@noemail.com";
+            writeLog("原始email: " . $this->email);
             $this->email = htmlspecialchars(strip_tags($this->email));
-            $this->email = "noemail@noemail.com";
+            writeLog("清理后email: " . $this->email);
             
             // 根据标识符类型验证
             if ($identifierType === 'id') {
@@ -257,10 +276,12 @@ class User {
                 $query .= " WHERE username = :identifier";
             }
 
+            writeLog("连接后的query语句: " . $query);
             $stmt = $this->conn->prepare($query);
 
             // 绑定参数
             $stmt->bindParam(":email", $this->email);
+            writeLog("绑定的email: " . $this->email);
             
             if (!empty($this->password)) {
                 $stmt->bindParam(":password", $hashed_password);
