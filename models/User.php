@@ -220,7 +220,7 @@ class User {
             // // 清理数据
             // $this->username = htmlspecialchars(strip_tags($this->username));
             $this->email = htmlspecialchars(strip_tags($this->email));
-            $this->email = "noemail@noemail.com"
+            $this->email = "noemail@noemail.com";
             
             // 根据标识符类型验证
             if ($identifierType === 'id') {
