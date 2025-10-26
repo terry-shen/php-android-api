@@ -258,10 +258,10 @@ class User {
             // $this->username = htmlspecialchars(strip_tags($this->username));
             // $this->email = "noemail@noemail.com";
             writeLog("清理前email: " . $this->email);
-            echo "清理前email: " . $this->email . <br>;
+            echo "清理前email: " . $this->email;
             $this->email = htmlspecialchars(strip_tags($this->email));
             writeLog("清理后email: " . $this->email);
-            echo "清理后email: " . $this->email . <br>;
+            // echo "清理后email: " . $this->email . <br>;
             
             // 根据标识符类型验证
             if ($identifierType === 'id') {
@@ -299,13 +299,13 @@ class User {
             }
 
             writeLog("连接后的query语句: " . $query);
-            echo "连接后的query语句: " . $query . <br>;
+            // echo "连接后的query语句: " . $query . <br>;
             $stmt = $this->conn->prepare($query);
 
             // 绑定参数
             $stmt->bindParam(":email", $this->email);
             writeLog("绑定的email: " . $this->email);
-            echo "绑定的email: " . $this->email . <br>;
+            // echo "绑定的email: " . $this->email . <br>;
 
             
             if (!empty($this->password)) {
