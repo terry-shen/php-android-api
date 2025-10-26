@@ -259,12 +259,14 @@ class User {
             // echo "连接后的query语句: " . $query . <br>;
             $stmt = $this->conn->prepare($query);
 
-            $this->email = htmlspecialchars(strip_tags($this->email));
+            // $this->email = htmlspecialchars(strip_tags($this->email));
+            $this->email = strip_tags($this->email);
             // 绑定参数
             $stmt->bindParam(":email", $this->email);
             
             if (!empty($this->password)) {
-                $stmt->bindParam(":password", $hashed_password);
+                // $stmt->bindParam(":password", $hashed_password);
+                $stmt->bindParam(":password", $$this->password);
             }
             
             // 绑定标识符参数
@@ -300,7 +302,7 @@ class User {
             error_log("isEmailUsedByOtherUser错误: " . $exception->getMessage());
             return false;
         }
-}
+    }
 
     /**
      * 根据用户名更新用户信息（便捷方法）
