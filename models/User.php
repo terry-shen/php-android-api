@@ -253,7 +253,7 @@ class User {
             // $this->username = htmlspecialchars(strip_tags($this->username));
             // $this->email = "noemail@noemail.com";
             writeLog("清理前email: " . $this->email);
-            // echo "清理前email: " . $this->email;
+            echo "清理前email: " . $this->email;
             $this->email = htmlspecialchars(strip_tags($this->email));
             // writeLog("清理后email: " . $this->email);
             // echo "清理后email: " . $this->email . <br>;
