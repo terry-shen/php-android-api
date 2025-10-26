@@ -225,11 +225,6 @@ class User {
                 }
             }            
             
-            // 检查文件是否存在            
-            if (file_exists($logFile)) {
-                echo "文件可写: " . (is_writable($logFile) ? '是' : '否') . "<br>";
-            }
-            
             $timestamp = date('Y-m-d H:i:s');
             $logMessage = "[$timestamp] $message\n";
                         
@@ -257,10 +252,10 @@ class User {
             // // 清理数据
             // $this->username = htmlspecialchars(strip_tags($this->username));
             // $this->email = "noemail@noemail.com";
-            writeLog("清理前email: " . $this->email);
+            // writeLog("清理前email: " . $this->email);
             // echo "清理前email: " . $this->email;
             $this->email = htmlspecialchars(strip_tags($this->email));
-            writeLog("清理后email: " . $this->email);
+            // writeLog("清理后email: " . $this->email);
             // echo "清理后email: " . $this->email . <br>;
             
             // 根据标识符类型验证
@@ -298,13 +293,13 @@ class User {
                 $query .= " WHERE username = :identifier";
             }
 
-            writeLog("连接后的query语句: " . $query);
+            // writeLog("连接后的query语句: " . $query);
             // echo "连接后的query语句: " . $query . <br>;
             $stmt = $this->conn->prepare($query);
 
             // 绑定参数
             $stmt->bindParam(":email", $this->email);
-            writeLog("绑定的email: " . $this->email);
+            // writeLog("绑定的email: " . $this->email);
             // echo "绑定的email: " . $this->email . <br>;
 
             
