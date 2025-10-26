@@ -266,7 +266,7 @@ class User {
             
             if (!empty($this->password)) {
                 // $stmt->bindParam(":password", $hashed_password);
-                $stmt->bindParam(":password", $$this->password);
+                $stmt->bindParam(":password", $this->password);
             }
             
             // 绑定标识符参数
