@@ -211,20 +211,21 @@ class User {
     }
 
     function writeLog($message) {
-        // 使用系统临时目录，通常有写权限
-        $logFile = sys_get_temp_dir() . '/user_update_debug.log';
+        // // 使用系统临时目录，通常有写权限
+        // $logFile = sys_get_temp_dir() . '/user_update_debug.log';
         
-        $timestamp = date('Y-m-d H:i:s');
-        $logMessage = "[$timestamp] $message\n";
+        // $timestamp = date('Y-m-d H:i:s');
+        // $logMessage = "[$timestamp] $message\n";
         
-        $result = file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
+        // $result = file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
         
-        if ($result === false) {
-            // 如果还是失败，尝试其他方法
-            error_log("无法写入日志: " . $message);
-        }
+        // if ($result === false) {
+        //     // 如果还是失败，尝试其他方法
+        //     error_log("无法写入日志: " . $message);
+        // }
         
-        return $result !== false;
+        // return $result !== false;
+        return true;
     }
 
     /**
