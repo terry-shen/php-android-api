@@ -57,7 +57,7 @@ try {
                         http_response_code(200);
                         $response = array(
                             "status" => "success",
-                            "message" => "用户信息更新成功",
+                            "message" => "用户信息更新成功，我做的标记",
                             "data" => array(
                                 "username" => $user->username,
                                 "email" => $user->email,
