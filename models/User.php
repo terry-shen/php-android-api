@@ -211,14 +211,40 @@ class User {
     }
 
     function writeLog($message) {
-        $logFile = '/tmp/logs/php_debug.log';
-        
-        // 输出路径以便查找
-        echo "日志文件路径: " . $logFile . "<br>";
-        
-        $timestamp = date('Y-m-d H:i:s');
-        $logMessage = "[$timestamp] $message\n";
-        file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
+        $logFile = '/tmp/logs/php_debug.log';        
+        try {            
+            // 检查目录
+            $logDir = dirname($logFile);
+            
+            // 如果目录不存在，尝试创建
+            if (!is_dir($logDir)) {
+                if (mkdir($logDir, 0755, true)) {
+                    echo "✓ 目录创建成功<br>";
+                } else {
+                    return false;
+                }
+            }            
+            
+            // 检查文件是否存在            
+            if (file_exists($logFile)) {
+                echo "文件可写: " . (is_writable($logFile) ? '是' : '否') . "<br>";
+            }
+            
+            $timestamp = date('Y-m-d H:i:s');
+            $logMessage = "[$timestamp] $message\n";
+                        
+            // 尝试写入
+            $result = file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
+            
+            if ($result === false) {                
+                return false;
+            } else {
+                return true;
+            }
+            
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
